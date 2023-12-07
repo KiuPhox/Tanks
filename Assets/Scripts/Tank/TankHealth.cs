@@ -40,21 +40,15 @@ public class TankHealth : MonoBehaviour
 
     private void OnEnable()
     {
-        // When the tank is enabled, reset the tank's health and whether or not it's dead.
         m_CurrentHealth = m_StartingHealth;
         m_Dead = false;
 
-        // Update the health slider's value and color.
         SetHealthUI();
     }
 
 
     public void TakeDamage(TankHealth originHealth, float damage)
     {
-        if (this == originHealth)
-        {
-            return;
-        }
         if (team == originHealth.team)
         {
             return;
