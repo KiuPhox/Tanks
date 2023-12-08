@@ -20,15 +20,13 @@ public class PlayerShooting : MonoBehaviour
 
     private TankHealth health;
 
-    private void OnEnable()
-    {
-        m_CurrentLaunchForce = m_MinLaunchForce;
-        m_AimSlider.value = m_MinLaunchForce;
-    }
-
     private void Awake()
     {
         health = GetComponent<TankHealth>();
+
+        m_CurrentLaunchForce = m_MinLaunchForce;
+        m_AimSlider.value = m_MinLaunchForce;
+        m_Fired = true;
     }
 
     private void Start ()
