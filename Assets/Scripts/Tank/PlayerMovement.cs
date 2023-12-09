@@ -16,13 +16,13 @@ public class PlayerMovement : MonoBehaviour
     private float m_MovementInputValue;
     private float m_TurnInputValue;
 
-    private void Awake ()
+    private void Awake()
     {
-        m_Rigidbody = GetComponent<Rigidbody> ();
+        m_Rigidbody = GetComponent<Rigidbody>();
     }
 
 
-    private void OnEnable ()
+    private void OnEnable()
     {
         m_Rigidbody.isKinematic = false;
 
@@ -34,7 +34,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    private void OnDisable ()
+    private void OnDisable()
     {
         m_Rigidbody.isKinematic = true;
 
@@ -44,23 +44,23 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
-    private void Start ()
+    private void Start()
     {
         m_OriginalPitch = m_MovementAudio.pitch;
     }
 
-
-    private void Update ()
+    private void Update()
     {
-        m_MovementInputValue = InputManager.Instance.GetMovementVector().y;
-        m_TurnInputValue = InputManager.Instance.GetMovementVector().x;
+        Vector2 movementVector = InputManager.Instance.GetMovementVector();
+
+        m_MovementInputValue = movementVector.y;
+        m_TurnInputValue = movementVector.x;
 
         EngineAudio();
     }
 
 
-    private void EngineAudio ()
+    private void EngineAudio()
     {
         if (Mathf.Abs (m_MovementInputValue) < 0.1f && Mathf.Abs (m_TurnInputValue) < 0.1f)
         {
@@ -75,7 +75,6 @@ public class PlayerMovement : MonoBehaviour
         {
             if (m_MovementAudio.clip == m_EngineIdling)
             {
-                // ... change the clip to driving and play.
                 m_MovementAudio.clip = m_EngineDriving;
                 m_MovementAudio.pitch = Random.Range(m_OriginalPitch - m_PitchRange, m_OriginalPitch + m_PitchRange);
                 m_MovementAudio.Play();
@@ -83,15 +82,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-
-    private void FixedUpdate ()
-    {
-        Move();
-        Turn();
-    }
-
-
-    private void Move()
+    public void Move()
     {
         Vector3 movement = transform.forward * m_MovementInputValue * m_Speed * Time.deltaTime;
 
@@ -99,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
 
-    private void Turn ()
+    public void Turn()
     {
         float turn = m_TurnInputValue * m_TurnSpeed * Time.deltaTime;
 

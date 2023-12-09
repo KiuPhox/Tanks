@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerShooting : MonoBehaviour
+public class PlayerShooting : NetworkBehaviour
 {
     public Rigidbody m_Shell;
     public Transform m_FireTransform;
@@ -29,14 +30,16 @@ public class PlayerShooting : MonoBehaviour
         m_Fired = true;
     }
 
-    private void Start ()
+    private void Start()
     {
         m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
     }
 
 
-    private void Update ()
+    private void Update()
     {
+        if (!IsOwner) return;
+
         m_AimSlider.value = m_MinLaunchForce;
 
         if (m_CurrentLaunchForce >= m_MaxLaunchForce && !m_Fired)
@@ -64,19 +67,18 @@ public class PlayerShooting : MonoBehaviour
         }
     }
 
-
     private void Fire()
     {
         m_Fired = true;
 
         Rigidbody shellInstance =
-            Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+            Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
 
         shellInstance.GetComponent<ShellExplosion>().health = health;
-        shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward; 
+        shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
 
         m_ShootingAudio.clip = m_FireClip;
-        m_ShootingAudio.Play ();
+        m_ShootingAudio.Play();
 
         m_CurrentLaunchForce = m_MinLaunchForce;
     }

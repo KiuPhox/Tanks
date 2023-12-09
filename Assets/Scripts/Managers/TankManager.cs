@@ -54,6 +54,11 @@ public class TankManager : MonoBehaviour
 
         tank.OnDie -= OnPlayerTankDie;
         CameraControl.Instance.RemoveTank(tank.gameObject);
+
+        if (PlayerTanks.Count == 0)
+        {
+            Debug.Log("Game Over");
+        }
     }
 
     private void OnEnemyTankDie(TankHealth tank)
