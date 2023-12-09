@@ -44,8 +44,9 @@ public class PlayerShooting : NetworkBehaviour
 
         if (m_CurrentLaunchForce >= m_MaxLaunchForce && !m_Fired)
         {
+            m_Fired = true;
             m_CurrentLaunchForce = m_MaxLaunchForce;
-            Fire();
+            RequestFireServerRpc();
         }
         else if (InputManager.Instance.GetShootingPressed())
         {
@@ -63,14 +64,25 @@ public class PlayerShooting : NetworkBehaviour
         }
         else if (!m_Fired)
         {
-            Fire();
+            m_Fired = true;
+            RequestFireServerRpc();
         }
+    }
+
+    [ServerRpc]
+    private void RequestFireServerRpc()
+    {
+        FireClientRpc();
+    }
+
+    [ClientRpc]
+    private void FireClientRpc()
+    {
+        Fire();
     }
 
     private void Fire()
     {
-        m_Fired = true;
-
         Rigidbody shellInstance =
             Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
 
