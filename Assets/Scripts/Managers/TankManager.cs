@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TankManager : MonoBehaviour
 {
@@ -22,16 +23,18 @@ public class TankManager : MonoBehaviour
         EnemyTanks = new List<TankHealth>();
     }
 
-    public void SpawnPlayerTank(Vector3 position, float angle = 0)
+    public void AddPlayerTank(TankHealth tank)
     {
-        TankHealth tank = Instantiate(playerTankPrefab, position, Quaternion.identity);
-
-        tank.transform.eulerAngles = new Vector3(0, angle, 0);
         tank.OnDie += OnPlayerTankDie;
 
         AllTanks.Add(tank);
         PlayerTanks.Add(tank);
         CameraControl.Instance.AddTarget(tank.gameObject);
+    }
+
+    public void RemovePlayerTank(TankHealth tank)
+    {
+        OnPlayerTankDie(tank);
     }
 
     public void SpawnEnemyTank(Vector3 position, float angle = 0)

@@ -12,8 +12,5 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        TankManager.Instance.SpawnPlayerTank(Vector3.zero);
-
-        TankManager.Instance.SpawnEnemyTank(new Vector3(5, 0, -10), Random.Range(0, 360f));
     }
 }

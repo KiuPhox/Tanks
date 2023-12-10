@@ -9,6 +9,8 @@ public class Player : NetworkBehaviour
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+
+        TankManager.Instance.AddPlayerTank(GetComponent<TankHealth>());
     }
 
     private void FixedUpdate()
@@ -17,5 +19,11 @@ public class Player : NetworkBehaviour
 
         playerMovement.Move();
         playerMovement.Turn();
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        TankManager.Instance.RemovePlayerTank(GetComponent<TankHealth>());
     }
 }
