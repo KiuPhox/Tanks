@@ -1,9 +1,10 @@
 using Pathfinding;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class TankAI : MonoBehaviour
+public class TankAI : NetworkBehaviour
 {
     [SerializeField] private float sightRange;
     [SerializeField] private Vector2 shootForceRange;
@@ -23,17 +24,27 @@ public class TankAI : MonoBehaviour
 
     void Update()
     {
+        if (!IsServer) return;
+
         shootTimer -= Time.deltaTime;
 
         if (shootTimer <= 0)
         {
             shootTimer = Random.Range(shootCooldownRange.x, shootCooldownRange.y);
-            tankShooting.Fire(Random.Range(shootForceRange.x, shootForceRange.y));
+            FireClientRpc(Random.Range(shootForceRange.x, shootForceRange.y));
         }
+    }
+
+    [ClientRpc]
+    private void FireClientRpc(float force)
+    {
+        tankShooting.Fire(force);
     }
 
     public void SetTarget(GameObject target)
     {
+        if (!IsServer) return;
+
         aiDestinationSetter.target = target.transform;
     }
 }

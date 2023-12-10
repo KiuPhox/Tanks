@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TankManager : MonoBehaviour
+public class TankManager : NetworkBehaviour
 {
     [SerializeField] private TankHealth playerTankPrefab;
     [SerializeField] private TankHealth enemyTankPrefab;
@@ -41,6 +42,8 @@ public class TankManager : MonoBehaviour
     {
         TankHealth tank = Instantiate(enemyTankPrefab, position, Quaternion.identity);
 
+        tank.GetComponent<NetworkObject>().Spawn();
+
         tank.GetComponent<TankAI>().SetTarget(PlayerTanks[0].gameObject);
 
         tank.transform.eulerAngles = new Vector3(0, angle, 0);
@@ -58,9 +61,11 @@ public class TankManager : MonoBehaviour
         tank.OnDie -= OnPlayerTankDie;
         CameraControl.Instance.RemoveTank(tank.gameObject);
 
+        Destroy(tank.gameObject);
+
         if (PlayerTanks.Count == 0)
         {
-            Debug.Log("Game Over");
+            GameManager.Instance.EndGame();
         }
     }
 
@@ -70,5 +75,7 @@ public class TankManager : MonoBehaviour
         EnemyTanks.Remove(tank);
 
         tank.OnDie -= OnEnemyTankDie;
+
+        tank.GetComponent<NetworkObject>().Despawn();
     }
 }

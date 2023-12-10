@@ -10,7 +10,6 @@ public class TankShooting : MonoBehaviour
     public AudioClip m_FireClip;
     private TankHealth health;
 
-
     private void Awake()
     {
         health = GetComponent<TankHealth>();

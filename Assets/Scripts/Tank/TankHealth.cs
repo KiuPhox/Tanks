@@ -1,8 +1,9 @@
 ﻿using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TankHealth : MonoBehaviour
+public class TankHealth : NetworkBehaviour
 {
     public float m_StartingHealth = 100f;
     public Slider m_Slider;
@@ -49,11 +50,19 @@ public class TankHealth : MonoBehaviour
 
     public void TakeDamage(TankHealth originHealth, float damage)
     {
+        if (!IsServer) return;
+
         if (team == originHealth.team)
         {
             return;
         }
+        
+        TankDamageClientRpc(damage);
+    }
 
+    [ClientRpc]
+    private void TankDamageClientRpc(float damage)
+    {
         m_CurrentHealth -= damage;
 
         SetHealthUI();
@@ -68,8 +77,7 @@ public class TankHealth : MonoBehaviour
     private void SetHealthUI()
     {
         m_Slider.value = m_CurrentHealth;
-
-        m_FillImage.color = Color.Lerp (m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
+        m_FillImage.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
 
 
@@ -78,14 +86,12 @@ public class TankHealth : MonoBehaviour
         m_Dead = true;
 
         m_ExplosionParticles.transform.position = transform.position;
-        m_ExplosionParticles.gameObject.SetActive (true);
+        m_ExplosionParticles.gameObject.SetActive(true);
 
         m_ExplosionParticles.Play();
 
         m_ExplosionAudio.Play();
 
         OnDie?.Invoke(this);
-
-        Destroy(gameObject);
     }
 }

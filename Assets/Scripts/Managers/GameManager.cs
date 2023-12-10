@@ -1,16 +1,23 @@
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    private void Awake()
+    private void Update()
     {
-        Instance = this;
+        if (!IsServer) return;
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            TankManager.Instance.SpawnEnemyTank(new Vector3(0, 0, 10));
+        }
     }
 
-    private void Start()
+    public void EndGame()
     {
+
     }
 }
