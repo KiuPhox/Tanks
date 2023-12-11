@@ -12,7 +12,12 @@ public class GameManager : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            TankManager.Instance.SpawnEnemyTank(new Vector3(0, 0, 10));
+            TankManager.Instance.SpawnEnemyTank(new Vector3(0, 0, -10));
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            PowerupManager.Instance.Spawn(new Vector3(0, 0, -10));
         }
     }
 
