@@ -8,6 +8,9 @@ public class PowerupManager : NetworkBehaviour
     [SerializeField]
     private List<NetworkObject> powerupList;
 
+    [SerializeField]
+    private int maxPowerups = 3;
+
     public static PowerupManager Instance { get; private set; }
 
     private void Awake()

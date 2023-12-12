@@ -11,17 +11,21 @@ public class TankHealth : NetworkBehaviour
     public Color m_FullHealthColor = Color.green;
     public Color m_ZeroHealthColor = Color.red;
     public GameObject m_ExplosionPrefab;
-        
-        
+    public Animator shieldAnimator;
+
     private AudioSource m_ExplosionAudio;
     private ParticleSystem m_ExplosionParticles;
     private float m_CurrentHealth;
     private bool m_Dead;
 
     public bool isPlayer;
+    public bool hasShield;
     public Team team;
 
     public Action<TankHealth> OnDie;
+
+    private float shieldTimer;
+
 
     public enum Team
     {
@@ -47,6 +51,53 @@ public class TankHealth : NetworkBehaviour
         SetHealthUI();
     }
 
+    private void Update()
+    {
+        if (hasShield)
+        {
+            shieldTimer -= Time.deltaTime;
+            if (shieldTimer <= 0)
+            {
+                shieldAnimator.SetTrigger("Disappear");
+                hasShield = false;
+            }
+        }
+    }
+
+    public void Heal(float amount)
+    {
+        if (!IsServer) return;
+
+        HealClientRpc(amount);
+    }
+
+    [ClientRpc]
+    private void HealClientRpc(float amount)
+    {
+        m_CurrentHealth += amount;
+        m_CurrentHealth = Mathf.Clamp(m_CurrentHealth, 0, m_StartingHealth);
+
+        SetHealthUI();
+    }
+
+    public void Shield(float duration)
+    {
+        if (!IsServer) return;
+
+        ShieldClientRpc(duration);
+    }
+
+    [ClientRpc]
+    private void ShieldClientRpc(float duration)
+    {
+        shieldTimer = duration;
+
+        if (!hasShield)
+        {
+            shieldAnimator.SetTrigger("Appear");
+            hasShield = true;
+        }
+    }
 
     public void TakeDamage(TankHealth originHealth, float damage)
     {
@@ -56,7 +107,12 @@ public class TankHealth : NetworkBehaviour
         {
             return;
         }
-        
+
+        if (hasShield)
+        {
+            return;
+        }
+
         TankDamageClientRpc(damage);
     }
 
@@ -73,13 +129,11 @@ public class TankHealth : NetworkBehaviour
         }
     }
 
-
     private void SetHealthUI()
     {
         m_Slider.value = m_CurrentHealth;
         m_FillImage.color = Color.Lerp(m_ZeroHealthColor, m_FullHealthColor, m_CurrentHealth / m_StartingHealth);
     }
-
 
     private void OnDeath()
     {

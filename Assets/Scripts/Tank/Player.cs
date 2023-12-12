@@ -6,6 +6,7 @@ using Unity.Netcode;
 public class Player : NetworkBehaviour
 {
     private PlayerMovement playerMovement;
+
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();

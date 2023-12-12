@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement: NetworkBehaviour
 {  
-    public float m_Speed = 12f;
+    public float defaultSpeed = 12f;
+
     public float m_TurnSpeed = 180f;
     public AudioSource m_MovementAudio;
     public AudioClip m_EngineIdling;
@@ -15,6 +17,10 @@ public class PlayerMovement : MonoBehaviour
 
     private float m_MovementInputValue;
     private float m_TurnInputValue;
+
+    private float doubleSpeedTimer;
+
+    private float currentSpeed;
 
     private void Awake()
     {
@@ -57,6 +63,16 @@ public class PlayerMovement : MonoBehaviour
         m_TurnInputValue = movementVector.x;
 
         EngineAudio();
+
+        if (doubleSpeedTimer > 0)
+        {
+            doubleSpeedTimer -= Time.deltaTime;
+            currentSpeed = defaultSpeed * 2;
+        }
+        else
+        {
+            currentSpeed = defaultSpeed;
+        }
     }
 
 
@@ -68,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 m_MovementAudio.clip = m_EngineIdling;
                 m_MovementAudio.pitch = Random.Range (m_OriginalPitch - m_PitchRange, m_OriginalPitch + m_PitchRange);
-                m_MovementAudio.Play ();
+                m_MovementAudio.Play();
             }
         }
         else
@@ -82,13 +98,23 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    public void SetDoubleSpeedTimer(float duration)
+    {
+        SetDoubleSpeedTimerClientRpc(duration);
+    }
+
+    [ClientRpc]
+    public void SetDoubleSpeedTimerClientRpc(float duration)
+    {
+        doubleSpeedTimer = duration;
+    }
+
     public void Move()
     {
-        Vector3 movement = transform.forward * m_MovementInputValue * m_Speed * Time.deltaTime;
+        Vector3 movement = transform.forward * m_MovementInputValue * currentSpeed * Time.deltaTime;
 
         m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
     }
-
 
     public void Turn()
     {

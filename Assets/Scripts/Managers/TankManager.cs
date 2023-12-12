@@ -10,7 +10,6 @@ public class TankManager : NetworkBehaviour
     [SerializeField] private TankHealth enemyTankPrefab;
 
     public static TankManager Instance { get; private set; }
-
     public List<TankHealth> AllTanks { get; private set; }
     public List<TankHealth> PlayerTanks { get; private set; }
     public List<TankHealth> EnemyTanks { get; private set; }
