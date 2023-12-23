@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class TankManager : NetworkBehaviour
 {
     [SerializeField] private TankHealth playerTankPrefab;
-    [SerializeField] private TankHealth enemyTankPrefab;
+    [SerializeField] private List<TankHealth> enemyTankPrefabs;
 
     public static TankManager Instance { get; private set; }
     public List<TankHealth> AllTanks { get; private set; }
@@ -39,6 +39,7 @@ public class TankManager : NetworkBehaviour
 
     public void SpawnEnemyTank(Vector3 position, float angle = 0)
     {
+        TankHealth enemyTankPrefab = enemyTankPrefabs[Random.Range(0, enemyTankPrefabs.Count)];
         TankHealth tank = Instantiate(enemyTankPrefab, position, Quaternion.identity);
 
         tank.GetComponent<NetworkObject>().Spawn();
